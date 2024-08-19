@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
 
-
-# In[2]:
-
-
-#define a function to filter to onlyu significant features
+#define a function to filter to only significant features
 def filter_significance(df, column=2, reverse_values=False, top_40=True):
     df = df.copy()
     #define the test column
@@ -72,8 +65,14 @@ def filter_significance(df, column=2, reverse_values=False, top_40=True):
     df['Group'] = np.where(df['mean'] < 0, 'Bottom', 'Top')
     
     if top_40 == True:
-        top_positive = df.nlargest(20, 'mean')
-        top_negative = df.nsmallest(20, 'mean')
+        # Filter the DataFrame to include only rows where 'mean' is greater than 0
+        positive_df = df[df['mean'] > 0]
+        top_positive = positive_df.nlargest(20, 'mean')
+
+        # Filter the DataFrame to include only rows where 'mean' is less than 0
+        negative_df = df[df['mean'] < 0]
+        top_negative = negative_df.nsmallest(20, 'mean')
+        
         df = pd.concat([top_positive, top_negative], ignore_index=True)
         print(f"Top Features: {len(top_positive)}")
         print(f"Bottom Features: {len(top_negative)}")
@@ -88,15 +87,6 @@ def filter_significance(df, column=2, reverse_values=False, top_40=True):
     df = df.sort_values(by="mean")
     
     return df, top_positive, top_negative
-
-
-# In[3]:
-
-
-
-
-
-# In[ ]:
 
 
 
